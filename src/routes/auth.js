@@ -8,8 +8,8 @@ const User = require('../models/User');
 const seedUsers = async () => {
   try {
     const users = [
-      { username: 'prashant', password: 'prashant123', displayName: 'Your Boy' },
-      { username: 'girl',     password: 'girl123',     displayName: 'Your Girl' }
+      { username: 'myown', password: '172004', displayName: 'Your Boy' },
+      { username: 'myown',     password: '212009',     displayName: 'Your Girl' }
     ];
 
     for (const u of users) {
