@@ -5,14 +5,14 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 
 const connectDB = require('./config/db');
-const { router: authRoutes, seedUsers } = require('./routes/auth');  // ← Updated import
+const { router: authRoutes, seedUsers } = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 const socketHandler = require('./sockets/socketHandler');
 
 const app = express();
 const server = http.createServer(app);
 
-// ================== CORS CONFIG ==================
+// ================== CORS ==================
 const allowedOrigins = [
   'https://soul-frontend-nine.vercel.app',
   'http://localhost:5173',
@@ -29,12 +29,10 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
-// ================================================
-
 app.use(express.json());
 
 app.get('/', (req, res) => res.send('Soul API running'));
@@ -42,12 +40,12 @@ app.get('/', (req, res) => res.send('Soul API running'));
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Connect to DB + Seed users
+// Connect DB + Seed users
 connectDB().then(async () => {
-  await seedUsers();           // ← Seed after connection
-  console.log('✅ Database connected & seeded');
+  console.log('✅ Database connected successfully');
+  await seedUsers();
 }).catch(err => {
-  console.error('❌ DB Connection Error:', err);
+  console.error('❌ DB Error:', err);
 });
 
 // Socket.io

@@ -4,12 +4,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Seed users ONLY after DB is connected
+// Seed users
 const seedUsers = async () => {
   try {
     const users = [
-      { username: 'boy', password: '123456', displayName: 'Your Boy' },
-      { username: 'girl',     password: '123456',     displayName: 'Your Girl' }
+      { username: 'prashant', password: 'prashant123', displayName: 'Your Boy' },
+      { username: 'girl',     password: 'girl123',     displayName: 'Your Girl' }
     ];
 
     for (const u of users) {
@@ -31,7 +31,7 @@ const seedUsers = async () => {
   }
 };
 
-// POST /api/auth/login
+// Login Route
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -61,5 +61,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Export both router and seed function
 module.exports = { router, seedUsers };
