@@ -1,4 +1,11 @@
 {
+  "name": "soul-backend",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -7,5 +14,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.1",
     "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
