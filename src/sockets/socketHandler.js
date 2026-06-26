@@ -1,3 +1,4 @@
+// full file
 const jwt = require('jsonwebtoken');
 const Message = require('../models/Message');
 const User = require('../models/User');
@@ -27,7 +28,6 @@ const socketHandler = (io) => {
       io.to(onlineUsers[other]).emit('user_online', { username });
     }
 
-    // Text message
     socket.on('send_message', async ({ text }) => {
       const receiver = username === 'prashant' ? 'girl' : 'prashant';
       const receiverOnline = !!onlineUsers[receiver];
@@ -39,11 +39,16 @@ const socketHandler = (io) => {
       socket.emit('message_saved', message);
     });
 
-    // Image message — saved via REST, just broadcast to other user
     socket.on('new_image_message', (message) => {
       const o = username === 'prashant' ? 'girl' : 'prashant';
+      if (onlineUsers[o]) io.to(onlineUsers[o]).emit('receive_message', message);
+    });
+
+    // Notify other user when a message is deleted for everyone
+    socket.on('message_deleted_everyone', ({ messageId }) => {
+      const o = username === 'prashant' ? 'girl' : 'prashant';
       if (onlineUsers[o]) {
-        io.to(onlineUsers[o]).emit('receive_message', message);
+        io.to(onlineUsers[o]).emit('message_deleted_everyone', { messageId });
       }
     });
 
