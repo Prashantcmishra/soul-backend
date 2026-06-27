@@ -7,6 +7,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const { router: authRoutes, seedUsers } = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
+const { router: pushRoutes } = require('./routes/push');
 const socketHandler = require('./sockets/socketHandler');
 
 const app = express();
