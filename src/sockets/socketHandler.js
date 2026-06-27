@@ -1,7 +1,7 @@
-// full file
 const jwt = require('jsonwebtoken');
 const Message = require('../models/Message');
 const User = require('../models/User');
+const { sendPush } = require('../routes/push');
 
 const onlineUsers = {};
 
@@ -28,23 +28,56 @@ const socketHandler = (io) => {
       io.to(onlineUsers[other]).emit('user_online', { username });
     }
 
+    // Text message
     socket.on('send_message', async ({ text }) => {
       const receiver = username === 'prashant' ? 'girl' : 'prashant';
       const receiverOnline = !!onlineUsers[receiver];
+
+      const senderUser = await User.findOne({ username });
+
       const message = await Message.create({
-        sender: username, receiver, text,
-        type: 'text', delivered: receiverOnline, seen: false
+        sender: username,
+        receiver,
+        text,
+        type: 'text',
+        delivered: receiverOnline,
+        seen: false
       });
-      if (receiverOnline) io.to(onlineUsers[receiver]).emit('receive_message', message);
+
+      if (receiverOnline) {
+        io.to(onlineUsers[receiver]).emit('receive_message', message);
+      } else {
+        // Send push notification — receiver is offline
+        await sendPush(receiver, {
+          title: senderUser?.displayName || username,
+          body: text.length > 80 ? text.slice(0, 80) + '...' : text,
+          icon: '/icon.png',
+          badge: '/icon.png',
+          url: '/'
+        });
+      }
+
       socket.emit('message_saved', message);
     });
 
-    socket.on('new_image_message', (message) => {
+    // Image message
+    socket.on('new_image_message', async (message) => {
       const o = username === 'prashant' ? 'girl' : 'prashant';
-      if (onlineUsers[o]) io.to(onlineUsers[o]).emit('receive_message', message);
+      if (onlineUsers[o]) {
+        io.to(onlineUsers[o]).emit('receive_message', message);
+      } else {
+        const senderUser = await User.findOne({ username });
+        await sendPush(o, {
+          title: senderUser?.displayName || username,
+          body: '📷 Sent you a photo',
+          icon: '/icon.png',
+          badge: '/icon.png',
+          url: '/'
+        });
+      }
     });
 
-    // Notify other user when a message is deleted for everyone
+    // Delete for everyone
     socket.on('message_deleted_everyone', ({ messageId }) => {
       const o = username === 'prashant' ? 'girl' : 'prashant';
       if (onlineUsers[o]) {

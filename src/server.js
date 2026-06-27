@@ -39,6 +39,7 @@ app.get('/', (req, res) => res.send('Soul API running'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/push', pushRoutes);
 
 // Connect DB + Seed users
 connectDB().then(async () => {
